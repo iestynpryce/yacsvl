@@ -89,6 +89,9 @@ CSV *yacsvl_malloc_from_file(char* filename, char delimiter)
 	csv->data = data;
 	_yacsvl_ingest_data_file(fp,csv);
 
+	/* Close the file handle */
+	fclose(fp);
+
 	return csv;
 }
 
@@ -134,6 +137,29 @@ void yacsvl_print_csv(CSV* csv)
 			printf("%c",(j+1==csv->cols) ? '\n' : csv->delimiter);
 		}
 	}
+}
+
+/* write data to file in csv format */
+void yacsvl_write_csv(char* filename, CSV* csv)
+{
+	FILE *fp = fopen(filename, "wb");
+	if (fp == NULL)
+	{
+		fprintf(stderr,"Failed to open file: %s\n",filename);
+		exit(1);
+	}
+
+	int i = 0;
+	int j = 0;
+	for (i=0; i<csv->rows;i++)
+	{
+		for(j=0; j<csv->cols;j++)
+		{
+			fprintf(fp,"%lf",csv->data[i][j]);
+			fprintf(fp,"%c",(j+1==csv->cols) ? '\n' : csv->delimiter);
+		}
+	}
+	fclose(fp);
 }
 
 /* Puts the csv data from a file into CSV data structure */

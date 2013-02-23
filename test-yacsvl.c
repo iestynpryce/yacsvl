@@ -19,6 +19,9 @@ int main(int argc, char **argv)
 	yacsvl_set_value(0,0,csv,10.2);
 	printf("[%d, %d] = %lf\n",0,0,yacsvl_get_value(0,0,csv));
 
+	/* test writing out the data */
+	yacsvl_write_csv("output.csv",csv);
+
 	yacsvl_print_csv(csv);
 	yacsvl_free(csv);
 

@@ -28,4 +28,7 @@ void yacsvl_print_pretty(CSV* csv);
 /* Data formatted as CSV on stdout */
 void yacsvl_print_csv(CSV* csv);
 
+/* Output csv data to a file */
+void yacsvl_write_csv(char* filename, CSV* csv);
+
 #endif /* YACSVL_H */
