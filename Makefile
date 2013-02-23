@@ -13,7 +13,7 @@ test: test-yacsvl.c
 install: shared
 	cp libyacsvl.so.$(VERSION) /usr/local/lib/
 	chmod 0755 /usr/local/lib/libyacsvl.so.$(VERSION)
-	ln -s /usr/local/lib/libyacsvl.so.$(VERSION) /usr/local/lib/libyacsvl.so
+	ln -sf /usr/local/lib/libyacsvl.so.$(VERSION) /usr/local/lib/libyacsvl.so
 	ldconfig
 
 shared: yacsvl.o
