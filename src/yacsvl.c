@@ -9,6 +9,25 @@
 #include "yacsvl.h"
 
 void _yacsvl_ingest_data_file(FILE *fp, CSV *csv);
+/* Check boundaries and error if missed */
+void _yacsvl_check_boundaries_v(int r, int c, CSV *csv);
+/* Check boundaries and return boolean */
+void _yacsvl_check_boundaries_b(int r, int c, CSV *csv);
+
+/* Get a value from a specific cell */
+double yacsvl_get_value(int r, int c, CSV *csv)
+{
+	/* Check boundaries */
+	_yacsvl_check_boundaries_v(r, c, csv);
+	return csv->data[r][c];
+}
+
+/* Set a value for a specific cell */
+void yacsvl_set_value(int r, int c, CSV *csv, double value)
+{
+	_yacsvl_check_boundaries_v(r, c, csv);
+	csv->data[r][c] = value;
+}
 
 /* Create a new csv from a given file name */
 CSV *yacsvl_malloc_from_file(char* filename, char delimiter)
@@ -168,5 +187,16 @@ void _yacsvl_ingest_data_file(FILE *fp, CSV *csv)
 			sign = -1;
 		}
 
+	}
+}
+
+/* Check boundaries and error if missed */
+void _yacsvl_check_boundaries_v(int r, int c, CSV *csv)
+{
+	if ( !( r < csv->rows) || !( c < csv->cols))
+	{
+		fprintf(stderr,"Index [%d,%d] out of bounds, CSV size is [%d,%d]\n", 
+				r, c, csv->rows-1, csv->cols-1);
+		exit(3);
 	}
 }

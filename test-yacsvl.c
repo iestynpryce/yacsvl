@@ -14,6 +14,11 @@ int main(int argc, char **argv)
 	yacsvl_free(csv);
 
 	csv = yacsvl_malloc_from_file("resources/test02.csv",',');
+	printf("[%d, %d] = %lf\n",0,0,yacsvl_get_value(0,0,csv));
+	printf("Change  value: ");
+	yacsvl_set_value(0,0,csv,10.2);
+	printf("[%d, %d] = %lf\n",0,0,yacsvl_get_value(0,0,csv));
+
 	yacsvl_print_csv(csv);
 	yacsvl_free(csv);
 
