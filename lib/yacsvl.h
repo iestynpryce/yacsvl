@@ -17,6 +17,9 @@ double yacsvl_get_value(CSV *csv, size_t row, size_t column);
 /* Get a value on a specific cell */
 void yacsvl_set_value(CSV *csv, size_t row, size_t column, double value);
 
+/* Create a csv type */
+CSV *yacsvl_calloc(size_t rows, size_t columns, char delimiter);
+
 /* Create a CSV from a file */
 CSV *yacsvl_malloc_from_file(char* filename, char delimiter);
 
@@ -34,5 +37,8 @@ void yacsvl_write_csv(char* filename, CSV* csv);
 
 /* Copy contents of a CSV to gsl matrix */
 gsl_matrix *yacsvl_copy_to_gsl_matrix(CSV *csv);
+
+/* Copy contents of a gsl_matrix to CSV */
+CSV *yacsvl_copy_from_gsl_matrix(gsl_matrix *m, char delim);
 
 #endif /* YACSVL_H */

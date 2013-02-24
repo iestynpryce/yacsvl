@@ -29,6 +29,36 @@ void yacsvl_set_value(CSV *csv, size_t r, size_t c, double value)
 	csv->data[r][c] = value;
 }
 
+/* Create a new csv */
+CSV *yacsvl_malloc(size_t rows, size_t columns, char delimiter)
+{
+	/* Create the CSV struct */
+	CSV *csv = calloc(1,sizeof(CSV));
+	if (csv == NULL)
+	{
+		fprintf(stderr,"Failed to allocate memory\n");
+		exit(2);
+	}
+	csv->rows = rows;
+	csv->cols = columns;
+	csv->delimiter = delimiter;
+
+	/* Create the data 'matrix' for the csv */
+	double **data = calloc(rows,sizeof(double*)); 
+	int i;
+	for (i=0; i<rows; i++)
+	{
+		data[i] = calloc(columns,sizeof(double));
+		if (data[i] == NULL)
+		{
+			fprintf(stderr,"Failed to allocate memory\n");
+			exit(2);
+		}
+	}
+	csv->data = data;
+	return csv;
+}
+
 /* Create a new csv from a given file name */
 CSV *yacsvl_malloc_from_file(char* filename, char delimiter)
 {
@@ -63,30 +93,7 @@ CSV *yacsvl_malloc_from_file(char* filename, char delimiter)
 		}
 	}
 
-	/* Create the CSV struct */
-	CSV *csv = calloc(1,sizeof(CSV));
-	if (csv == NULL)
-	{
-		fprintf(stderr,"Failed to allocate memory\n");
-		exit(2);
-	}
-	csv->rows = rows;
-	csv->cols = columns;
-	csv->delimiter = delimiter;
-
-	/* Create the data 'matrix' for the csv */
-	double **data = calloc(rows,sizeof(double*)); 
-	int i;
-	for (i=0; i<rows; i++)
-	{
-		data[i] = calloc(columns,sizeof(double));
-		if (data[i] == NULL)
-		{
-			fprintf(stderr,"Failed to allocate memory\n");
-			exit(2);
-		}
-	}
-	csv->data = data;
+	CSV *csv = yacsvl_malloc(rows,columns,delimiter);
 	_yacsvl_ingest_data_file(fp,csv);
 
 	/* Close the file handle */
@@ -179,6 +186,30 @@ gsl_matrix *yacsvl_copy_to_gsl_matrix(CSV *csv)
 	}
 
 	return m;
+}
+
+/* Copy CSV type from a GSL matrix type */
+CSV *yacsvl_copy_from_gsl_matrix(gsl_matrix *m, char delim)
+{
+	int i = 0;
+	int j = 0;
+
+	CSV *csv = yacsvl_malloc(m->size1, m->size2,delim);
+	if (csv == NULL)
+	{
+		fprintf(stderr,"Out of memory\n");
+		exit(3);
+	}
+
+	for (i=0; i<csv->rows; i++)
+	{
+		for (j=0; j<csv->cols; j++)
+		{
+			yacsvl_set_value(csv,i,j,gsl_matrix_get(m,i,j));
+		}
+	}
+
+	return csv;
 }
 
 /* Puts the csv data from a file into CSV data structure */
