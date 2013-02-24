@@ -32,6 +32,7 @@ void yacsvl_print_csv(CSV* csv);
 /* Output csv data to a file */
 void yacsvl_write_csv(char* filename, CSV* csv);
 
-/* Copy contents to gsl matrix */
+/* Copy contents of a CSV to gsl matrix */
 gsl_matrix *yacsvl_copy_to_gsl_matrix(CSV *csv);
+
 #endif /* YACSVL_H */

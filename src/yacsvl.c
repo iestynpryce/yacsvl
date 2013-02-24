@@ -162,7 +162,7 @@ void yacsvl_write_csv(char* filename, CSV* csv)
 	fclose(fp);
 }
 
-/* Convert CSV type into a GSL matrix type */
+/* Copy CSV type into a GSL matrix type */
 gsl_matrix *yacsvl_copy_to_gsl_matrix(CSV *csv)
 {
 	int i=0;
