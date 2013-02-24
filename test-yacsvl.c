@@ -19,6 +19,9 @@ int main(int argc, char **argv)
 	yacsvl_set_value(csv,0,0,10.2);
 	printf("[%d, %d] = %lf\n",0,0,yacsvl_get_value(csv,0,0));
 
+	printf("Delimiter: %c\n",yacsvl_get_delimiter(csv));
+	yacsvl_set_delimiter(csv,'|');
+
 	/* test writing out the data */
 	yacsvl_write_csv("output.csv",csv);
 

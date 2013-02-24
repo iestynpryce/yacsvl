@@ -29,6 +29,18 @@ void yacsvl_set_value(CSV *csv, size_t r, size_t c, double value)
 	csv->data[r][c] = value;
 }
 
+/* Get delimiter value */
+char yacsvl_get_delimiter(CSV *csv)
+{
+	return csv->delimiter;
+}
+
+/* Set delimiter value */
+void yacsvl_set_delimiter(CSV *csv, char delimiter)
+{
+	csv->delimiter = delimiter;
+}
+
 /* Create a new csv */
 CSV *yacsvl_malloc(size_t rows, size_t columns, char delimiter)
 {

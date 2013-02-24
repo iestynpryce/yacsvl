@@ -17,6 +17,12 @@ double yacsvl_get_value(CSV *csv, size_t row, size_t column);
 /* Get a value on a specific cell */
 void yacsvl_set_value(CSV *csv, size_t row, size_t column, double value);
 
+/* Get delimiter value */
+char yacsvl_get_delimiter(CSV *csv);
+
+/* Set delimiter value */
+void yacsvl_set_delimiter(CSV *csv, char delimiter);
+
 /* Create a csv type */
 CSV *yacsvl_calloc(size_t rows, size_t columns, char delimiter);
 
