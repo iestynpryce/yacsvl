@@ -10,22 +10,22 @@
 
 void _yacsvl_ingest_data_file(FILE *fp, CSV *csv);
 /* Check boundaries and error if missed */
-void _yacsvl_check_boundaries_v(int r, int c, CSV *csv);
+void _yacsvl_check_boundaries_v(CSV *csv, size_t r, size_t c);
 /* Check boundaries and return boolean */
-void _yacsvl_check_boundaries_b(int r, int c, CSV *csv);
+bool _yacsvl_check_boundaries_b(CSV *csv, size_t r, size_t c);
 
 /* Get a value from a specific cell */
-double yacsvl_get_value(int r, int c, CSV *csv)
+double yacsvl_get_value(CSV* csv, size_t r, size_t c)
 {
 	/* Check boundaries */
-	_yacsvl_check_boundaries_v(r, c, csv);
+	_yacsvl_check_boundaries_v(csv,r, c);
 	return csv->data[r][c];
 }
 
 /* Set a value for a specific cell */
-void yacsvl_set_value(int r, int c, CSV *csv, double value)
+void yacsvl_set_value(CSV *csv, size_t r, size_t c, double value)
 {
-	_yacsvl_check_boundaries_v(r, c, csv);
+	_yacsvl_check_boundaries_v(csv,r, c);
 	csv->data[r][c] = value;
 }
 
@@ -174,7 +174,7 @@ gsl_matrix *yacsvl_copy_to_gsl_matrix(CSV *csv)
 	{
 		for(j=0; j<csv->cols; j++)
 		{
-			gsl_matrix_set(m,i,j,yacsvl_get_value(i,j,csv));
+			gsl_matrix_set(m,i,j,yacsvl_get_value(csv,i,j));
 		}
 	}
 
@@ -236,12 +236,24 @@ void _yacsvl_ingest_data_file(FILE *fp, CSV *csv)
 }
 
 /* Check boundaries and error if missed */
-void _yacsvl_check_boundaries_v(int r, int c, CSV *csv)
+void _yacsvl_check_boundaries_v(CSV* csv, size_t r, size_t c)
 {
 	if ( !( r < csv->rows) || !( c < csv->cols))
 	{
-		fprintf(stderr,"Index [%d,%d] out of bounds, CSV size is [%d,%d]\n", 
+		fprintf(stderr,"Index [%ld,%ld] out of bounds, CSV size is [%ld,%ld]\n", 
 				r, c, csv->rows-1, csv->cols-1);
 		exit(3);
 	}
+}
+
+/* Check boundaries and return boolean */
+bool _yacsvl_check_boundaries_b(CSV* csv, size_t r, size_t c)
+{
+	if ( !( r < csv->rows) || !( c < csv->cols))
+	{
+		fprintf(stderr,"Index [%ld,%ld] out of bounds, CSV size is [%ld,%ld]\n", 
+				r, c, csv->rows-1, csv->cols-1);
+		return false;
+	}
+	return true;
 }

@@ -9,15 +9,15 @@
 int main(int argc, char **argv)
 {
 	CSV *csv = yacsvl_malloc_from_file("resources/test01.csv",',');
-	printf("Rows: %d\tColumns: %d\n", csv->rows, csv->cols);
+	printf("Rows: %ld\tColumns: %ld\n", csv->rows, csv->cols);
 	yacsvl_print_pretty(csv);
 	yacsvl_free(csv);
 
 	csv = yacsvl_malloc_from_file("resources/test02.csv",',');
-	printf("[%d, %d] = %lf\n",0,0,yacsvl_get_value(0,0,csv));
+	printf("[%d, %d] = %lf\n",0,0,yacsvl_get_value(csv,0,0));
 	printf("Change  value: ");
-	yacsvl_set_value(0,0,csv,10.2);
-	printf("[%d, %d] = %lf\n",0,0,yacsvl_get_value(0,0,csv));
+	yacsvl_set_value(csv,0,0,10.2);
+	printf("[%d, %d] = %lf\n",0,0,yacsvl_get_value(csv,0,0));
 
 	/* test writing out the data */
 	yacsvl_write_csv("output.csv",csv);

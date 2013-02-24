@@ -5,17 +5,17 @@
 #include <gsl/gsl_matrix.h>
 
 typedef struct {
-	int      rows;
-	int      cols;
+	size_t   rows;
+	size_t   cols;
 	char	 delimiter;
 	double **data;
 } CSV;
 
 /* Get a value from a specific cell */
-double yacsvl_get_value(int row, int column, CSV *csv);
+double yacsvl_get_value(CSV *csv, size_t row, size_t column);
 
 /* Get a value on a specific cell */
-void yacsvl_set_value(int row, int column, CSV *csv, double value);
+void yacsvl_set_value(CSV *csv, size_t row, size_t column, double value);
 
 /* Create a CSV from a file */
 CSV *yacsvl_malloc_from_file(char* filename, char delimiter);
