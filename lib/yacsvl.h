@@ -2,6 +2,7 @@
 #ifndef YACSVL_H
 #define YACSVL_H
 
+#include <gsl/gsl_matrix.h>
 
 typedef struct {
 	int      rows;
@@ -31,4 +32,6 @@ void yacsvl_print_csv(CSV* csv);
 /* Output csv data to a file */
 void yacsvl_write_csv(char* filename, CSV* csv);
 
+/* Copy contents to gsl matrix */
+gsl_matrix *yacsvl_copy_to_gsl_matrix(CSV *csv);
 #endif /* YACSVL_H */

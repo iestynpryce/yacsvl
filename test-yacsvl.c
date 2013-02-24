@@ -23,6 +23,19 @@ int main(int argc, char **argv)
 	yacsvl_write_csv("output.csv",csv);
 
 	yacsvl_print_csv(csv);
+
+	/* copy to gsl matrix */
+	gsl_matrix *mat = yacsvl_copy_to_gsl_matrix(csv);
+	if (mat != NULL)
+	{
+		printf("gsl_matrix created\n");
+	}
+	else
+	{
+		printf("ERROR: gsl_matrix not created");
+	}
+	gsl_matrix_free(mat);
+
 	yacsvl_free(csv);
 
 	return 0;
