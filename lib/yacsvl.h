@@ -3,11 +3,13 @@
 #define YACSVL_H
 
 #include <gsl/gsl_matrix.h>
+#include <stdbool.h>
 
 typedef struct {
 	size_t   rows;
 	size_t   cols;
 	char	 delimiter;
+	char   **header;
 	double **data;
 } CSV;
 
@@ -24,10 +26,10 @@ char yacsvl_get_delimiter(CSV *csv);
 void yacsvl_set_delimiter(CSV *csv, char delimiter);
 
 /* Create a csv type */
-CSV *yacsvl_calloc(size_t rows, size_t columns, char delimiter);
+CSV *yacsvl_malloc(size_t rows, size_t columns, char delimiter, bool header);
 
 /* Create a CSV from a file */
-CSV *yacsvl_malloc_from_file(char* filename, char delimiter);
+CSV *yacsvl_malloc_from_file(char* filename, char delimiter, bool header);
 
 /* Free memory allocated for the CSV */
 void yacsvl_free(CSV *csv);

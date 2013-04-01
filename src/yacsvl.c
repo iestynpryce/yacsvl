@@ -5,10 +5,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "yacsvl.h"
 
-void _yacsvl_ingest_data_file(FILE *fp, CSV *csv);
+#define HEADER_TEXT_LEN 256
+
+void _yacsvl_ingest_data_file(FILE *fp, CSV *csv, bool has_header);
 /* Check boundaries and error if missed */
 void _yacsvl_check_boundaries_v(CSV *csv, size_t r, size_t c);
 /* Check boundaries and return boolean */
@@ -42,7 +45,7 @@ void yacsvl_set_delimiter(CSV *csv, char delimiter)
 }
 
 /* Create a new csv */
-CSV *yacsvl_malloc(size_t rows, size_t columns, char delimiter)
+CSV *yacsvl_malloc(size_t rows, size_t columns, char delimiter,bool has_header)
 {
 	/* Create the CSV struct */
 	CSV *csv = calloc(1,sizeof(CSV));
@@ -68,11 +71,25 @@ CSV *yacsvl_malloc(size_t rows, size_t columns, char delimiter)
 		}
 	}
 	csv->data = data;
+
+	/* Create a header matrix if we have a header */
+	char **header = NULL;
+	if (has_header)
+	{
+		header = malloc(columns*sizeof(char*));
+		if (header == NULL)
+		{
+			fprintf(stderr, "Failed to allocate memory\n");
+			exit(2);
+		}
+	}
+	csv->header = header;
+
 	return csv;
 }
 
 /* Create a new csv from a given file name */
-CSV *yacsvl_malloc_from_file(char* filename, char delimiter)
+CSV *yacsvl_malloc_from_file(char* filename, char delimiter,bool header)
 {
 	/* Open the file */
 	FILE *fp = NULL;
@@ -105,8 +122,15 @@ CSV *yacsvl_malloc_from_file(char* filename, char delimiter)
 		}
 	}
 
-	CSV *csv = yacsvl_malloc(rows,columns,delimiter);
-	_yacsvl_ingest_data_file(fp,csv);
+	/* If we have a header line then 'rows' will be one too many.
+	 * Correct this by subtracting one. */
+	if (header)
+	{
+		rows--;
+	}
+
+	CSV *csv = yacsvl_malloc(rows,columns,delimiter,header);
+	_yacsvl_ingest_data_file(fp,csv,header);
 
 	/* Close the file handle */
 	fclose(fp);
@@ -132,6 +156,17 @@ void yacsvl_print_pretty(CSV* csv)
 	int i = 0;
 	int j = 0;
 
+	/* Print header */
+	if (csv->header != NULL)
+	{
+		for (i=0; i <csv->cols; i++)
+		{
+			printf("%s\t",csv->header[i]);
+		}
+		printf("\n");
+	}
+
+	/* Print data */
 	for (i=0; i < csv->rows; i++)
 	{
 		for (j = 0; j < csv->cols; j++)
@@ -206,7 +241,10 @@ CSV *yacsvl_copy_from_gsl_matrix(gsl_matrix *m, char delim)
 	int i = 0;
 	int j = 0;
 
-	CSV *csv = yacsvl_malloc(m->size1, m->size2,delim);
+	/* Assume we can have a header */
+	bool has_header = true;
+
+	CSV *csv = yacsvl_malloc(m->size1, m->size2,delim,has_header);
 	if (csv == NULL)
 	{
 		fprintf(stderr,"Out of memory\n");
@@ -225,7 +263,7 @@ CSV *yacsvl_copy_from_gsl_matrix(gsl_matrix *m, char delim)
 }
 
 /* Puts the csv data from a file into CSV data structure */
-void _yacsvl_ingest_data_file(FILE *fp, CSV *csv)
+void _yacsvl_ingest_data_file(FILE *fp, CSV *csv, bool has_header)
 {
 	/* Ensure that we are at the start of the file*/
 	rewind(fp);
@@ -238,6 +276,49 @@ void _yacsvl_ingest_data_file(FILE *fp, CSV *csv)
 	bool decimal = false;
 	int  cdecimal = 1;
 	int  sign = 1;
+
+	/* Skip first line if header */
+	if (has_header)
+	{
+		char text[HEADER_TEXT_LEN];
+		int counter = 0;
+		int header_column = 0;
+
+		while((c=fgetc(fp))) 
+		{
+			/* Ingest header */
+			if (c != csv->delimiter && c != '\n')
+			{
+				if (counter < HEADER_TEXT_LEN) 
+				{
+					text[counter] = c;
+					counter++;
+				}
+			}
+			else
+			{
+				char *header = malloc(HEADER_TEXT_LEN*sizeof(char));
+				if (header == NULL)
+				{
+					fprintf(stderr,"Failed to allocate memory\n");
+					exit(2);
+				}
+				text[counter] = '\0';
+				strcpy(header,text);
+				csv->header[header_column] = header;
+
+				counter = 0;
+				header_column++;
+			}
+
+			/* Break if we've reached the EOL */
+			if ( c == '\n') 
+			{
+				break;
+			}
+		}
+	}
+
 
 	while ((c=fgetc(fp))!=EOF)
 	{
